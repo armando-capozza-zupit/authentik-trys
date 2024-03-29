@@ -1,1 +1,26 @@
-/* User customisable */
+* {
+    --ak-accent: lightblue;
+    --pf-global--FontFamily--sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    --pf-global--FontFamily--heading--sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"
+}
+*::after{
+    --pf-c-nav__link--m-current--after--BorderColor: lightblue;
+    --ak-accent: lightblue;
+}
+.pf-c-nav__link.pf-m-current::after, .pf-c-nav__link.pf-m-current:hover::after, .pf-c-nav__item.pf-m-current:not(.pf-m-expanded) .pf-c-nav__link::after {
+    border-color: lightblue;
+}
+.pf-c-title{
+    text-align: center;
+    font-size: 32px !important;
+    font-weight: 500 !important;
+}
+
+.pf-c-login__main-header{
+    padding: 0;
+    justify-content: left;
+}
+.ak-brand img{
+    padding: 0;
+    padding-bottom: 1em;
+}
