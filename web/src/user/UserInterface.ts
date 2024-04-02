@@ -163,7 +163,8 @@ class UserInterfacePresentation extends AKElement {
         return (
             this.me.user.isSuperuser ||
             // TODO: somehow add `access_admin_interface` to the API schema
-            this.me.user.systemPermissions.includes("access_admin_interface")
+            this.me.user.systemPermissions.includes("access_admin_interface") ||
+            this.me.user.systemPermissions.includes("access_admin_interface_only_users")
         );
     }
 

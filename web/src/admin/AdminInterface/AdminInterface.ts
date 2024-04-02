@@ -1,4 +1,4 @@
-import { ROUTES } from "@goauthentik/admin/Routes";
+import { ROUTES, USER_ADMIN_ROUTES } from "@goauthentik/admin/Routes";
 import { DEFAULT_CONFIG } from "@goauthentik/common/api/config";
 import {
     EVENT_API_DRAWER_TOGGLE,
@@ -31,6 +31,7 @@ import PFBase from "@patternfly/patternfly/patternfly-base.css";
 import { AdminApi, SessionUser, UiThemeEnum, Version } from "@goauthentik/api";
 
 import "./AdminSidebar";
+import { Route } from "@goauthentik/authentik/elements/router/Route";
 
 @customElement("ak-interface-admin")
 export class AdminInterface extends EnterpriseAwareInterface {
@@ -75,9 +76,12 @@ export class AdminInterface extends EnterpriseAwareInterface {
         ];
     }
 
+    routes: Route[] = [];
+
     constructor() {
         super();
         this.ws = new WebsocketClient();
+        this.routes = ROUTES;
         window.addEventListener(EVENT_NOTIFICATION_DRAWER_TOGGLE, () => {
             this.notificationDrawerOpen = !this.notificationDrawerOpen;
             updateURLParams({
@@ -96,12 +100,19 @@ export class AdminInterface extends EnterpriseAwareInterface {
         configureSentry(true);
         this.version = await new AdminApi(DEFAULT_CONFIG).adminVersionRetrieve();
         this.user = await me();
+        const canAccessOnlyUsers = !this.user.user.isSuperuser && this.user.user.systemPermissions.includes("access_admin_interface_only_users");
+
         const canAccessAdmin =
             this.user.user.isSuperuser ||
             // TODO: somehow add `access_admin_interface` to the API schema
-            this.user.user.systemPermissions.includes("access_admin_interface");
+            this.user.user.systemPermissions.includes("access_admin_interface") ||
+            this.user.user.systemPermissions.includes("access_admin_interface_only_users");
+
         if (!canAccessAdmin && this.user.user.pk > 0) {
             window.location.assign("/if/user/");
+        }
+        if (canAccessOnlyUsers) {
+            this.routes = USER_ADMIN_ROUTES;
         }
     }
 
@@ -133,7 +144,7 @@ export class AdminInterface extends EnterpriseAwareInterface {
                                             tabindex="-1"
                                             id="main-content"
                                             defaultUrl="/administration/overview"
-                                            .routes=${ROUTES}
+                                            .routes=${this.routes}
                                         >
                                         </ak-router-outlet>
                                     </main>

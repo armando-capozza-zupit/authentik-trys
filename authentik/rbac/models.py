@@ -70,6 +70,7 @@ class SystemPermission(models.Model):
             ("view_system_tasks", _("Can view system tasks")),
             ("run_system_tasks", _("Can run system tasks")),
             ("access_admin_interface", _("Can access admin interface")),
+            ("access_admin_interface_only_users", _("Can access admin interface (only users)")),
             ("view_system_settings", _("Can view system settings")),
             ("edit_system_settings", _("Can edit system settings")),
         ]

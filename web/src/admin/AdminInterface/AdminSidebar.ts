@@ -17,6 +17,7 @@ import { map } from "lit/directives/map.js";
 
 import { AdminApi, CoreApi, UiThemeEnum, Version } from "@goauthentik/api";
 import type { SessionUser, UserSelf } from "@goauthentik/api";
+import {until} from "lit/directives/until.js";
 
 @customElement("ak-admin-sidebar")
 export class AkAdminSidebar extends WithCapabilitiesConfig(AKElement) {
@@ -82,7 +83,7 @@ export class AkAdminSidebar extends WithCapabilitiesConfig(AKElement) {
                     ? "pf-m-light"
                     : ""}"
             >
-                ${this.renderSidebarItems()}
+                ${until(this.renderSidebarItems(), html``)}
             </ak-sidebar>
         `;
     }
@@ -97,9 +98,11 @@ export class AkAdminSidebar extends WithCapabilitiesConfig(AKElement) {
         this.classList.add(this.open ? "pf-m-expanded" : "pf-m-collapsed");
     }
 
-    renderSidebarItems(): TemplateResult {
+    async renderSidebarItems(): Promise<TemplateResult> {
         // The second attribute type is of string[] to help with the 'activeWhen' control, which was
         // commonplace and singular enough to merit its own handler.
+        const user = await me();
+
         type SidebarEntry = [
             path: string | null,
             label: string,
@@ -145,6 +148,21 @@ export class AkAdminSidebar extends WithCapabilitiesConfig(AKElement) {
                 ["/admin/settings", msg("Settings")]]],
         ];
 
+        const sidebarAdminUserContent: SidebarEntry[] = [
+            ["/if/user/", msg("User interface"), { "?isAbsoluteLink": true, "?highlight": true }],
+            [null, msg("Directory"), null, [
+                ["/identity/users", msg("Users"), [`^/identity/users/(?<id>${ID_REGEX})$`]],
+                ["/identity/groups", msg("Groups"), [`^/identity/groups/(?<id>${UUID_REGEX})$`]],
+                ["/identity/roles", msg("Roles"), [`^/identity/roles/(?<id>${UUID_REGEX})$`]],
+                ["/core/tokens", msg("Tokens and App passwords")],
+                ["/flow/stages/invitations", msg("Invitations")]]],
+        ];
+
+        let content = sidebarContent;
+        if (!user.user.isSuperuser) {
+            content = sidebarAdminUserContent;
+        }
+
         // Typescript requires the type here to correctly type the recursive path
         type SidebarRenderer = (_: SidebarEntry) => TemplateResult;
 
@@ -165,7 +183,7 @@ export class AkAdminSidebar extends WithCapabilitiesConfig(AKElement) {
         return html`
             ${this.renderNewVersionMessage()}
             ${this.renderImpersonationMessage()}
-            ${map(sidebarContent, renderOneSidebarItem)}
+            ${map(content, renderOneSidebarItem)}
             ${this.renderEnterpriseMessage()}
         `;
     }

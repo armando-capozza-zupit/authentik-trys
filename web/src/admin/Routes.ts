@@ -153,3 +153,42 @@ export const ROUTES: Route[] = [
         return html`<ak-enterprise-license-list></ak-enterprise-license-list>`;
     }),
 ];
+
+export const USER_ADMIN_ROUTES: Route[] = [
+    new Route(new RegExp("^/identity/groups$"), async () => {
+        await import("@goauthentik/admin/groups/GroupListPage");
+        return html`<ak-group-list></ak-group-list>`;
+    }),
+    new Route(new RegExp(`^/identity/groups/(?<uuid>${UUID_REGEX})$`), async (args) => {
+        await import("@goauthentik/admin/groups/GroupViewPage");
+        return html`<ak-group-view .groupId=${args.uuid}></ak-group-view>`;
+    }),
+    new Route(new RegExp("^/identity/users$"), async () => {
+        await import("@goauthentik/admin/users/UserListPage");
+        return html`<ak-user-list></ak-user-list>`;
+    }),
+    new Route(new RegExp(`^/identity/users/(?<id>${ID_REGEX})$`), async (args) => {
+        await import("@goauthentik/admin/users/UserViewPage");
+        return html`<ak-user-view .userId=${parseInt(args.id, 10)}></ak-user-view>`;
+    }),
+    new Route(new RegExp("^/identity/roles$"), async () => {
+        await import("@goauthentik/admin/roles/RoleListPage");
+        return html`<ak-role-list></ak-role-list>`;
+    }),
+    new Route(new RegExp(`^/identity/roles/(?<id>${UUID_REGEX})$`), async (args) => {
+        await import("@goauthentik/admin/roles/RoleViewPage");
+        return html`<ak-role-view roleId=${args.id}></ak-role-view>`;
+    }),
+    new Route(new RegExp("^/flow/stages/invitations$"), async () => {
+        await import("@goauthentik/admin/stages/invitation/InvitationListPage");
+        return html`<ak-stage-invitation-list></ak-stage-invitation-list>`;
+    }),
+    new Route(new RegExp("^/core/tokens$"), async () => {
+        await import("@goauthentik/admin/tokens/TokenListPage");
+        return html`<ak-token-list></ak-token-list>`;
+    }),
+     new Route(new RegExp("^/enterprise/licenses$"), async () => {
+        await import("@goauthentik/admin/enterprise/EnterpriseLicenseListPage");
+        return html`<ak-enterprise-license-list></ak-enterprise-license-list>`;
+    }),
+];
